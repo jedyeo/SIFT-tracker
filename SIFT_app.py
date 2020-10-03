@@ -53,16 +53,44 @@ class My_App(QtWidgets.QMainWindow):
     # Source: https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_feature2d/py_feature_homography/py_feature_homography.html
     def SLOT_query_camera(self):
         ret, frame = self._camera_device.read()
-        camera_feed_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # grayscaled webcam feed
-     #   template_gray = cv2.cvtColor(cv2.imread(self.template_path), cv2.COLOR_BGR2GRAY)  # grayscaled template
+        cam_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # grayscaled webcam feed
+
         img = cv2.imread(self.template_path)
-        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # grayscaled img
+
+        # Instantiate SIFT object
+        sift = cv2.xfeatures2d.SIFT_create()
+
+        # find keypoints and descriptors
+        kp_img, des_img = sift.detectAndCompute(img_gray, None)
+        kp_cam, des_cam = sift.detectAndCompute(cam_gray, None)
+
+        # FLANN parameters
+        FLANN_INDEX_KDTREE = 0
+        index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
+        search_params = dict(checks=50)
+
+        flann = cv2.FlannBasedMatcher(index_params, search_params)
+
+        matches = flann.knnMatch(des_img, des_cam, k=2)
+        matches_mask = [[0,0] for i in xrange(len(matches))]
+
+        # apply Lowe's ratio test
+        for i,(m,n) in enumerate(matches):
+            if m.distance < 0.7 * n.distance:
+                matches_mask[i]=[1,0]
+
+        draw_params = dict(matchColor = (0,255,0),
+                   singlePointColor = (255,0,0),
+                   matchesMask = matches_mask,
+                   flags = 0)
+
+        out = cv2.drawMatchesKnn(img, kp_img, frame, kp_cam, matches, None, **draw_params)
 
 
-        
 
         # Display image on webcam
-        pixmap = self.convert_cv_to_pixmap(img_gray)
+        pixmap = self.convert_cv_to_pixmap(out)
         self.live_image_label.setPixmap(pixmap)
 
     def SLOT_toggle_camera(self):
