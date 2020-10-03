@@ -87,6 +87,7 @@ class My_App(QtWidgets.QMainWindow):
                    matchesMask = matches_mask,
                    flags = 0)
 
+        # enough valid keypoints to form a homography
         if len(good) > MIN_MATCH_COUNT:
             src_pts = np.float32([ kp_img[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
             dst_pts = np.float32([ kp_cam[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
@@ -99,10 +100,11 @@ class My_App(QtWidgets.QMainWindow):
 
             out = cv2.polylines(frame, [np.int32(dst)], True, 255,3, cv2.LINE_AA)
 
+        # else, map out any keypoints, since we can't form a homography
         else:
             out = cv2.drawMatchesKnn(img, kp_img, frame, kp_cam, matches, None, **draw_params)
 
-        # Display image on webcam
+        # display image on webcam
         pixmap = self.convert_cv_to_pixmap(out)
         self.live_image_label.setPixmap(pixmap)
 
