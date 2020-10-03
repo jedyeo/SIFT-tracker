@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1066</width>
+    <height>697</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,7 @@
    <widget class="QPushButton" name="toggle_cam_button">
     <property name="geometry">
      <rect>
-      <x>520</x>
+      <x>740</x>
       <y>50</y>
       <width>111</width>
       <height>25</height>
@@ -58,8 +58,8 @@
      <rect>
       <x>440</x>
       <y>100</y>
-      <width>320</width>
-      <height>240</height>
+      <width>591</width>
+      <height>441</height>
      </rect>
     </property>
     <property name="text">
@@ -72,7 +72,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1066</width>
      <height>22</height>
     </rect>
    </property>

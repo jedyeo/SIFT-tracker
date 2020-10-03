@@ -3,6 +3,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from python_qt_binding import loadUi
 
+import numpy as np
 import cv2
 import sys
 
@@ -29,7 +30,7 @@ class My_App(QtWidgets.QMainWindow):
         self._timer.timeout.connect(self.SLOT_query_camera)
         self._timer.setInterval(1000 / self._cam_fps)
 
-
+    # Gets picture from file system
     def SLOT_browse_button(self):
         dlg = QtWidgets.QFileDialog()
         dlg.setFileMode(QtWidgets.QFileDialog.ExistingFile)
@@ -49,11 +50,19 @@ class My_App(QtWidgets.QMainWindow):
         q_img = QtGui.QImage(cv_img.data, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)
         return QtGui.QPixmap.fromImage(q_img)
 
+    # Source: https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_feature2d/py_feature_homography/py_feature_homography.html
     def SLOT_query_camera(self):
         ret, frame = self._camera_device.read()
-        #TODO run SIFT on the captured frame
+        camera_feed_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # grayscaled webcam feed
+     #   template_gray = cv2.cvtColor(cv2.imread(self.template_path), cv2.COLOR_BGR2GRAY)  # grayscaled template
+        img = cv2.imread(self.template_path)
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-        pixmap = self.convert_cv_to_pixmap(frame)
+
+        
+
+        # Display image on webcam
+        pixmap = self.convert_cv_to_pixmap(img_gray)
         self.live_image_label.setPixmap(pixmap)
 
     def SLOT_toggle_camera(self):
